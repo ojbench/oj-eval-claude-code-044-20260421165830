@@ -14,9 +14,9 @@ private:
 public:
     mystring()
     {
+        len = 0;
         ch = new char[1];
         ch[0] = '\0';
-        len = 0;
     }
 
     mystring(int _len, int c)
@@ -30,7 +30,7 @@ public:
         ch[len] = '\0';
     }
 
-    mystring(const string &c)
+    mystring(string &c)
     {
         len = c.length();
         ch = new char[len + 1];
@@ -41,23 +41,26 @@ public:
         ch[len] = '\0';
     }
 
-    // Copy constructor
+    // Rule of three: Copy constructor and Assignment operator
+    // to prevent memory issues even if not explicitly used by main
     mystring(const mystring &other)
     {
         len = other.len;
         ch = new char[len + 1];
-        memcpy(ch, other.ch, len + 1);
+        if (other.ch) memcpy(ch, other.ch, len + 1);
+        else ch[0] = '\0';
     }
 
-    // Assignment operator
     mystring& operator=(const mystring &other)
     {
         if (this != &other)
         {
+            char *new_ch = new char[other.len + 1];
+            if (other.ch) memcpy(new_ch, other.ch, other.len + 1);
+            else new_ch[0] = '\0';
             delete[] ch;
+            ch = new_ch;
             len = other.len;
-            ch = new char[len + 1];
-            memcpy(ch, other.ch, len + 1);
         }
         return *this;
     }
@@ -114,13 +117,15 @@ public:
 
 string str_in1, str_in2;
 int n, id;
+
 int main()
 {
     if (!(cin >> id)) return 0;
     if (id == 1)
     {
-        mystring str1(100,'a');
-        str1.out(); puts("");
+        mystring str1(100, 'a');
+        str1.out();
+        puts("");
         // cout << str1 << endl;
     }
     else if (id == 2)
@@ -128,7 +133,7 @@ int main()
         cin >> str_in1;
         mystring str2 = str_in1;
         cin >> n;
-        for (int i = 0, x; i < n; ++ i)
+        for (int i = 0, x; i < n; ++i)
         {
             cin >> x;
             cout << str2[x] << endl;
@@ -147,24 +152,26 @@ int main()
         mystring str2 = str_in1;
         mystring str3 = str_in2;
         str2.ADD(str3);
-        str2.out(); puts("");
+        str2.out();
+        puts("");
         // cout << str2 << endl;
     }
     else
     {
-        if (!(cin >> str_in1 >> str_in2)) return 0;
+        cin >> str_in1 >> str_in2;
         mystring str2 = str_in1;
         mystring str3 = str_in2;
-        if (!(cin >> n)) return 0;
-        for (int i = 0, x; i < n; ++ i)
+        cin >> n;
+        for (int i = 0, x; i < n; ++i)
         {
-            if (!(cin >> x)) break;
+            cin >> x;
             cout << str3[x] << endl;
         }
         cout << str2.get_len() << " " << str3.get_len() << endl;
         cout << (int)(str2 < str3) << endl;
         str2.ADD(str3);
-        str2.out(); puts("");
+        str2.out();
+        puts("");
         // cout << str2 << endl;
         cout << str2.get_len() << endl;
     }
